@@ -1,5 +1,210 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{multicol}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Environnement
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Commandes generales
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\(}{\left (}
+\renewcommand{\)}{\right )}
+\newcommand{\abs}[1]{\left|{#1}\right|}
+\newcommand{\norm}[1]{||{#1}||}
+
+\newcommand{\C}{\ensuremath{\mathbb{C}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+
+
+\newcommand{\Mat}[2]{{\mathcal{M}_{#1, #2}\(\R\)}}
+\newcommand{\M}[1]{{\mathcal{M}_{#1}\(\R\)}}
+\newcommand{\Mn}[1]{{\mathcal{M}_n\(#1\)}}
+\newcommand{\MC}[1]{{\mathcal{M}_{#1}\(\C\)}}
+\newcommand{\Id}[1]{{\mathrm{Id}_{#1}}}
+\newcommand{\cond}[1]{{\mathrm{cond}\(#1\)}}
+\newcommand{\partialx}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\partialxx}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\uni}[2]{u_{{#1},{#2}}}
+
+\setlength{\leftmargin}{-2cm}%
+\setlength{\rightmargin}{2cm}%
+\setlength{\textwidth}{15cm}
 
 \begin{document}
+
+\noindent
+{\rule{\textwidth}{.2mm}}\\
+ENSIIE
+\hfill
+Projet Math
+\hfill
+1A\\
+{\rule{\textwidth}{.2mm}}
+
+\section{EDP}
+
+\begin{align*}
+  \partialx{P}{t} & = rP - rS\partialx{P}{S} -
+                    \frac{1}{2}\sigma^2S^2\partialxx{P}{S},
+                    \quad\forall (t,s)\in[0,T]\times [0,L], \\
+  P(T, s) & = \max(K-s, 0),\quad\forall s\in[0,L]\quad\mathrm{(CI)}, \\
+  P(t, 0) & = Ke^{r\(t - T\)},\quad\forall t\in[0,T]\quad\mathrm{(CB1)}, \\
+  P(t, L) & = 0,\quad\forall t\in[0,T]\quad\mathrm{(CB2)}.
+\end{align*}
+
+\section{Changement de variable}
+
+On veut une condition initiale et non terminale. Posons
+$u(t,x) = P(T- t, x)$. On obtient :
+
+\begin{align*}
+  \partialx{u}{t}(t, x) & = -\partialx{P}{t}(T - t, x), \\
+                        & = -rP(T - t, x) + rx\partial{P}{x}(T - t, x) +
+                          \frac{1}{2}\sigma^2x^2\partialxx{P}{x}(T - t, x), \\
+                        & = -ru(t, x) + rx\partial{u}{x}(t, x) +
+                          \frac{1}{2}\sigma^2x^2\partialxx{u}{x}(t, x).
+\end{align*}
+
+De m\^eme pour la condition initiale (CI) et les deux conditions aux
+bord (CB1) et (CB2). On obtient au final :
+
+\begin{align*}
+  \partialx{u}{t} & = -ru + rx\partialx{u}{x} +
+                                  \frac{1}{2}\sigma^2x^2\partialxx{u}{x},
+                                  \quad\forall (t,x)\in[0,T]\times [0,L], \\
+  u(0, x) & = \max(K - x, 0),\quad\forall x\in[0,L]\quad\mathrm{(CI)}, \\
+  u(t, 0) & = Ke^{-rt},\quad\forall t\in[0,T]\quad\mathrm{(CB1)}, \\
+  u(t, L) & = 0,\quad\forall t\in[0,T]\quad\mathrm{(CB2)}.
+\end{align*}
+
+\section{Discr\'etisation de $[0,T]$ et $[0, L]$}
+
+Soient $N,\ M\in\N^*$. Posons $\Delta T=\frac{T}{N}$, $t_n =
+n\Delta T\ \forall n\in\{0,\ldots,N\}$ et $\Delta x=\frac{L}{M+1}$, $x_i =
+i\Delta x\ \forall i\in\{0,\ldots,M+1\}$
+
+\section{Discr\'etisation de l'EDP}
+
+On utilise un $\theta$-sch\'ema qui permet de prendre en compte la
+m\'ethode des diff\'erences finies (MDF) explicite ($\theta = 0$),
+implicite ($\theta = 1$) et de Crank-Nicholson ($\theta =
+\frac{1}{2}$). $u_{n,i}$ sera l'approximation de $u\(t_n,x_i\)$ et
+$\forall (n,i)\in\{1,\ldots,N - 1\}\times\{1,\ldots,M\}$ :
+
+\begin{align}
+  \nonumber
+  \frac{\uni{n + 1}{i} - \uni{n}{i}}{\Delta T} =
+  & -r\(\theta\uni{n + 1}{i} + (1 - \theta)\uni{n}{i}\) \\
+  \nonumber
+  & +r\frac{x_i}{\Delta x}\(\theta\(\uni{n + 1}{i + 1} - \uni{n +
+    1}{i}\) + (1 - \theta)\(\uni{n}{i + 1} - \uni{n}{i}\)\) \\
+  \label{eq:disc}
+  & +\frac{1}{2}\sigma^2\frac{x_i^2}{\Delta x^2}\(\theta\(\uni{n +
+    1}{i + 1} - 2\uni{n + 1}{i} + \uni{n + 1}{i - 1}\) + (1 - \theta)\(\uni{n}{i + 1} - 2\uni{n}{i} + \uni{n}{i - 1}\)\)
+\end{align}
+
+Condition initiale :
+$$\uni{0}{i} = \max(K - x_i, 0),\quad \forall i\in\{1,\ldots,M + 1\}.$$
+
+Conditions aux bords :
+\begin{align*}
+  \uni{n}{0}     & = e^{-rt_n},\quad \forall n\in\{1,\ldots,N\}, \\
+  \uni{n}{M + 1} & = 0,\quad \forall n\in\{1,\ldots,N\}.
+\end{align*}
+
+On simplifie \eqref{eq:disc} en remarquant que $\frac{x_i}{\Delta x} =
+i$ :
+
+\begin{align}
+  \nonumber
+  \frac{\uni{n + 1}{i} - \uni{n}{i}}{\Delta T} =
+  & -r\(\theta\uni{n + 1}{i} + (1 - \theta)\uni{n}{i}\) \\
+  \nonumber
+  & +ri\(\theta\(\uni{n + 1}{i + 1} - \uni{n +
+    1}{i}\) + (1 - \theta)\(\uni{n}{i + 1} - \uni{n}{i}\)\) \\
+  \label{eq:disc}
+  & +\frac{1}{2}\sigma^2i^2\(\theta\(\uni{n +
+    1}{i + 1} - 2\uni{n + 1}{i} + \uni{n + 1}{i - 1}\) + (1 - \theta)\(\uni{n}{i + 1} - 2\uni{n}{i} + \uni{n}{i - 1}\)\),
+\end{align}
+
+et on regroupe $\uni{n + 1}{i}$ \`a gauche et $\uni{n}{i}$ \`a droite
+:
+
+\begin{multline}
+  (1+r\Delta T\theta)\uni{n+1}{i} - r\Delta T\theta i(\uni{n+1}{i+1} -
+  \uni{n+1}{i}) - \\
+  \frac{1}{2}\sigma^2\Delta T\theta i^2 (\uni{n+1}{i+1} -2\uni{n+1}{i}
+  + \uni{n+1}{i - 1}) = \\
+  (1-r\Delta T(1-\theta))\uni{n}{i} + r\Delta T(1-\theta) i(\uni{n}{i+1} -
+  \uni{n}{i}) + \\
+  \frac{1}{2}\sigma^2\Delta T(1-\theta) i^2 (\uni{n}{i+1} -2\uni{n}{i}
+  + \uni{n}{i - 1}),
+\end{multline}
+
+\'equivalent \`a :
+
+\begin{multline}
+  \label{eq:disc2}
+  -\frac{1}{2}\sigma^2\Delta T\theta i^2\uni{n+1}{i - 1} + (1+r\Delta
+  T\theta +r\Delta T\theta i + \sigma^2\Delta T\theta i^2)\uni{n+1}{i}
+  \\
+  - (r\Delta T\theta i + \frac{1}{2}\sigma^2\Delta T\theta
+  i^2\uni{n+1}{i + 1}) = \\
+  \frac{1}{2}\sigma^2\Delta T(1-\theta) i^2\uni{n}{i - 1} + (1-r\Delta
+  T(1-\theta) -r\Delta T(1-\theta) i - \sigma^2\Delta T(1-\theta)
+  i^2)\uni{n}{i} \\
+  + (r\Delta T(1-\theta) i + \frac{1}{2}\sigma^2\Delta T(1-\theta)
+  i^2)\uni{n}{i + 1}.
+\end{multline}
+
+\section{Ecriture sous forme matricielle de \eqref{eq:disc2}}
+
+Ne \textbf{pas} oublier les conditions initiale et aux bords. Pour
+simplifier les expressions, posons :
+\begin{align*}
+  \alpha & = r\Delta T\theta i,\\
+  \beta  & = \sigma^2\Delta T\theta i^2, \\
+  \gamma & = r\Delta T(1 - \theta) i,\\
+  \delta & = \sigma^2\Delta T(1-\theta) i^2. \\
+\end{align*}
+
+Alors \eqref{eq:disc2} est \'equivalent \`a
+
+\begin{multline}
+  \label{eq:disc2}
+  -\frac{1}{2}\beta\uni{n+1}{i - 1} + (1+r\Delta
+  T\theta + \alpha + \beta)\uni{n+1}{i}
+  - \(\alpha + \frac{1}{2}\beta\)\uni{n+1}{i + 1} = \\
+  \frac{1}{2}\delta\uni{n}{i - 1} + (1-r\Delta
+  T(1-\theta) - \gamma - \delta)\uni{n}{i}
+  + \(\gamma + \frac{1}{2}\delta\)\uni{n}{i + 1}.
+\end{multline}
+
+Conditions aux bords :
+\begin{align*}
+  \uni{n}{0} & = Ke^{-rt_n} \mathrm{pour} i = 1 \\
+  \uni{n}{M+1} = 0 \mathrm{pour} i = M
+\end{align*}
 
 \end{document}
