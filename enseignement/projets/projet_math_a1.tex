@@ -192,7 +192,7 @@ simplifier les expressions, posons :
 Alors \eqref{eq:disc2} est \'equivalent \`a
 
 \begin{multline}
-  \label{eq:disc2}
+  \label{eq:disc3}
   -\frac{1}{2}\beta\uni{n+1}{i - 1} + (1+r\Delta
   T\theta + \alpha + \beta)\uni{n+1}{i}
   - \(\alpha + \frac{1}{2}\beta\)\uni{n+1}{i + 1} = \\
@@ -203,8 +203,25 @@ Alors \eqref{eq:disc2} est \'equivalent \`a
 
 Conditions aux bords :
 \begin{align*}
-  \uni{n}{0} & = Ke^{-rt_n} \mathrm{pour} i = 1 \\
-  \uni{n}{M+1} = 0 \mathrm{pour} i = M
+  \uni{n}{0}   & = Ke^{-rt_n} \mathrm{\ pour\ } i = 1 \\
+  \uni{n}{M+1} &= 0 \mathrm{\ pour\ } i = M
+\end{align*}
+
+On pose le vecteur colonne $U_n=(\uni{n}{1},\ldots,\uni{n}{M})$. Avec \eqref{eq:disc3} et
+(CB), la formulation \'equivalente est $AU_{n+1}=BU_n+F_n$, $A$ et $B$
+deux matrices carr\'ees tridiagonales de taille $M$, et $F_n$ est un vecteur colonne
+de taile $M$, avec :
+\begin{align*}
+  a_{i,i}  & = 1+r\Delta T\theta + \alpha + \beta,\ i=1\ldots M \\
+  a_{i,i-1} & = -\frac{1}{2} \beta,\ i=2\ldots M\ \mathrm{sous-diag} \\
+  a_{i+1,i} & = -\(\alpha + \frac{1}{2} \beta\),\ i=1\ldots M-1\ \mathrm{sur-diag} \\
+  b_{i,i}  & = 1-\Delta T(1-\theta) + \gamma + \delta,\ i=1\ldots M \\
+  b_{i,i-1} & = \frac{1}{2} \delta,\ i=2\ldots M\ \mathrm{sous-diag} \\
+  b_{i+1,i} & = \(\gamma + \frac{1}{2} \delta\),\ i=1\ldots M-1\
+              \mathrm{sur-diag} \\
+  f_1 & = \frac{1}{2}K\(\beta e^{-rt_{n+1}} + \delta e^{-rt_n}\) \\
+      & = \frac{1}{2}Ke^{-rt_n}\(\beta e^{-r\Delta T} + \delta\) \\
+  f_i & = 0 \ i=2,\ldots,M.
 \end{align*}
 
 \end{document}
